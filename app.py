@@ -104,11 +104,13 @@ def load_models():
         os.path.exists(f'{MODEL_DIR}/{f}')
         for f in ['cancel_model.pkl', 'adr_model.pkl', 'label_encoders.pkl', 'feature_info.pkl']
     )
-    if missing and DATA_PATH is not None:
-        with st.spinner("⏳ First-time setup: Training models on your data (2–3 min)..."):
+    if missing:
+        with st.spinner("⏳ First-time setup: Downloading dataset & training models (3–5 min)..."):
             try:
                 import train_models
                 train_models.train_and_save_models()
+                # Clear data cache so dashboard uses full dataset
+                load_data.clear()
             except Exception as e:
                 st.error(f"Auto-training failed: {e}")
                 return None, None, None, None
@@ -129,9 +131,11 @@ def load_models():
 
 @st.cache_data(show_spinner=False)
 def load_data():
-    if DATA_PATH is None:
+    # Always prefer full dataset over sample — re-check after potential download
+    path = _find_data_path()
+    if path is None:
         return None
-    df = pd.read_csv(DATA_PATH)
+    df = pd.read_csv(path)
     df['children']          = df['children'].fillna(0)
     df['total_guests']      = df['adults'] + df['children'] + df['babies']
     df['total_nights']      = df['stays_in_weekend_nights'] + df['stays_in_week_nights']
