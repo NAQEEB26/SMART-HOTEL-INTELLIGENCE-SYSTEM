@@ -26,16 +26,43 @@ MONTH_MAP = {
 }
 
 
+# ── Full dataset download URL (GitHub Release asset) ──────────────────────────
+DATASET_URL = "https://github.com/NAQEEB26/SMART-HOTEL-INTELLIGENCE-SYSTEM/releases/download/v1.0/hotel_booking.csv"
+
+
+def download_full_dataset(dest='hotel_booking.csv'):
+    """Download full dataset from GitHub Release if not present locally."""
+    try:
+        import urllib.request
+        print(f"Downloading full dataset from GitHub Release...")
+        urllib.request.urlretrieve(DATASET_URL, dest)
+        print(f"✅ Downloaded to {dest}")
+        return dest
+    except Exception as e:
+        print(f"⚠️  Download failed: {e}")
+        return None
+
+
 def find_data_file():
+    # Check local paths first
     for p in [
         'hotel_booking.csv',
         'data/hotel_booking.csv',
         '../hotel_booking.csv',
-        'data/hotel_booking_sample.csv',   # Streamlit Cloud fallback
-        '../data/hotel_booking_sample.csv',
     ]:
         if os.path.exists(p):
             return p
+
+    # Try downloading full dataset from GitHub Release
+    result = download_full_dataset('hotel_booking.csv')
+    if result and os.path.exists(result):
+        return result
+
+    # Last fallback: sample CSV
+    for p in ['data/hotel_booking_sample.csv', '../data/hotel_booking_sample.csv']:
+        if os.path.exists(p):
+            return p
+
     return None
 
 
