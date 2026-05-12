@@ -27,16 +27,22 @@ MONTH_MAP = {
 
 
 # ── Full dataset download URL (GitHub Release asset) ──────────────────────────
-DATASET_URL = "https://github.com/NAQEEB26/SMART-HOTEL-INTELLIGENCE-SYSTEM/releases/download/v1.0/hotel_booking.csv"
+DATASET_URL = "https://github.com/user-attachments/files/27629657/hotel_booking.csv"
 
 
 def download_full_dataset(dest='hotel_booking.csv'):
     """Download full dataset from GitHub Release if not present locally."""
     try:
-        import urllib.request
+        import requests
         print(f"Downloading full dataset from GitHub Release...")
-        urllib.request.urlretrieve(DATASET_URL, dest)
-        print(f"✅ Downloaded to {dest}")
+        response = requests.get(DATASET_URL, stream=True, timeout=300, allow_redirects=True)
+        response.raise_for_status()
+        with open(dest, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=1024 * 1024):
+                if chunk:
+                    f.write(chunk)
+        size_mb = os.path.getsize(dest) / (1024 * 1024)
+        print(f"✅ Downloaded {size_mb:.1f} MB to {dest}")
         return dest
     except Exception as e:
         print(f"⚠️  Download failed: {e}")
