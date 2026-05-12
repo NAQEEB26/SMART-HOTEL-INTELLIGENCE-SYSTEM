@@ -27,7 +27,13 @@ MONTH_MAP = {
 
 
 def find_data_file():
-    for p in ['hotel_booking.csv', 'data/hotel_booking.csv', '../hotel_booking.csv']:
+    for p in [
+        'hotel_booking.csv',
+        'data/hotel_booking.csv',
+        '../hotel_booking.csv',
+        'data/hotel_booking_sample.csv',   # Streamlit Cloud fallback
+        '../data/hotel_booking_sample.csv',
+    ]:
         if os.path.exists(p):
             return p
     return None
@@ -43,7 +49,7 @@ def train_and_save_models(data_path=None, model_dir='model'):
         data_path = find_data_file()
     if data_path is None or not os.path.exists(data_path):
         raise FileNotFoundError(
-            "hotel_booking.csv not found. Place it in the project root folder."
+            "Dataset not found. Expected hotel_booking.csv or data/hotel_booking_sample.csv"
         )
 
     os.makedirs(model_dir, exist_ok=True)

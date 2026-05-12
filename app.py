@@ -82,7 +82,13 @@ MODEL_DIR = 'model'
 
 
 def _find_data_path():
-    for p in ['hotel_booking.csv', 'data/hotel_booking.csv', '../hotel_booking.csv']:
+    for p in [
+        'hotel_booking.csv',
+        'data/hotel_booking.csv',
+        '../hotel_booking.csv',
+        'data/hotel_booking_sample.csv',
+        '../data/hotel_booking_sample.csv',
+    ]:
         if os.path.exists(p):
             return p
     return None
